@@ -14,4 +14,4 @@ interface UserSearchService {
 /**
  * Models the search query response.
  */
-data class UserSearchResponse(val ok: Boolean, val users: List<User>)
+data class UserSearchResponse(val error: String, val ok: Boolean, val users: List<User>)

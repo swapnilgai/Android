@@ -44,6 +44,7 @@ class UserSearchComposeFragment : DaggerFragment() {
 
   @Inject internal lateinit var presenter: UserSearchPresenter
 
+
   override fun onCreateView(
       inflater: LayoutInflater,
       container: ViewGroup?,
@@ -140,7 +141,8 @@ private fun Preview() {
     Surface {
       UserSearchScreen(
           state = UserSearchState(
-              setOf(UserSearchResult("James"), UserSearchResult("James123"))
+              setOf(UserSearchResult("James", avatarUrl = "", displayName = "James", id= "1"),
+                  UserSearchResult("James123", avatarUrl = "", displayName = "James", id= "2"))
           )
       )
     }

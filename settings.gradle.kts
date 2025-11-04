@@ -16,3 +16,4 @@ dependencyResolutionManagement {
 include(":app")
 include(":common-ui")
 include(":common")
+include(":common-db")

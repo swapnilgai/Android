@@ -17,11 +17,22 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
-    namespace = "com.slack.exercise.common"
+    namespace = "com.slack.exercise.commondb"
 }
 
 dependencies {
-    implementation(libs.collection)
+    // Room dependencies
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    kapt(libs.room.compiler)
+
+    // Dagger dependencies
+    implementation(libs.dagger)
+    kapt(libs.dagger.compiler)
+    kapt(libs.dagger.android.processor)
+    implementation(libs.dagger.android.support)
+
+    // Coroutines
     implementation(libs.coroutines.android)
 
     testImplementation(libs.junit)

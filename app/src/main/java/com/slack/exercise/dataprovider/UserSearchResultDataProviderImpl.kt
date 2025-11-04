@@ -26,7 +26,7 @@ class UserSearchResultDataProviderImpl @Inject constructor(
         retryOption = RetryOption(1)) {
         slackApi.searchUsers(searchTerm)
             .map { user ->
-                UserSearchResult(user.username)
+                UserSearchResult(username = user.username, avatarUrl = user.avatarUrl, id = user.id, displayName = user.displayName)
             }.toSet()
     }
 }

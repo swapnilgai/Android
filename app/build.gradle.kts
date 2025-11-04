@@ -29,6 +29,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
     buildFeatures {
         viewBinding = true
         compose = true
@@ -49,6 +52,7 @@ dependencies {
     // Module dependencies
     implementation(project(":common"))
     implementation(project(":common-ui"))
+    implementation(project(":common-db"))
 
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 
@@ -62,7 +66,7 @@ dependencies {
     implementation(libs.coroutines.android)
     implementation(libs.lifecycle.runtime)
     implementation(libs.lifecycle.viewmodel)
-    implementation(libs.lifecycle.compose)
+//    implementation(libs.lifecycle.compose)
 
     implementation(libs.dagger)
     kapt(libs.dagger.compiler)

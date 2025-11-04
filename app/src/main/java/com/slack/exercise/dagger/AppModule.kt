@@ -2,6 +2,8 @@ package com.slack.exercise.dagger
 
 import com.slack.exercise.api.SlackApi
 import com.slack.exercise.api.SlackApiImpl
+import com.slack.exercise.dataprovider.DenyListDataProvider
+import com.slack.exercise.dataprovider.DenyListDataProviderImpl
 import com.slack.exercise.dataprovider.UserSearchResultDataProvider
 import com.slack.exercise.dataprovider.UserSearchResultDataProviderImpl
 import com.slack.exercise.ui.usersearch.UserSearchPresenter
@@ -17,6 +19,10 @@ abstract class AppModule {
   @Binds
   abstract fun provideUserSearchResultDataProvider(
       dataProvider: UserSearchResultDataProviderImpl): UserSearchResultDataProvider
+
+  @Binds
+  abstract fun provideDenyListDataProvider(
+      dataProvider: DenyListDataProviderImpl): DenyListDataProvider
 
   @Binds
   abstract fun provideUserSearchPresenter(
