@@ -46,6 +46,10 @@ tasks.withType<KotlinCompile>().configureEach {
 }
 
 dependencies {
+    // Module dependencies
+    implementation(project(":common"))
+    implementation(project(":common-ui"))
+
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 
     implementation(libs.appcompat)
@@ -58,6 +62,7 @@ dependencies {
     implementation(libs.coroutines.android)
     implementation(libs.lifecycle.runtime)
     implementation(libs.lifecycle.viewmodel)
+    implementation(libs.lifecycle.compose)
 
     implementation(libs.dagger)
     kapt(libs.dagger.compiler)

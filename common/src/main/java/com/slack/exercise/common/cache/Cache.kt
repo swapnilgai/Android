@@ -4,9 +4,6 @@ import androidx.collection.LruCache
 
 interface CacheKey
 
-data class StringCacheKey(val str: String) : CacheKey
-
-
 private data class CacheEntry(
     val data: Any,
     val requestTimeStamp: Long,

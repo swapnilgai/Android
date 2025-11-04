@@ -5,6 +5,7 @@ import com.slack.exercise.common.cache.Cache
 import com.slack.exercise.common.cache.CacheKey
 import com.slack.exercise.common.cache.CacheOptions
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
@@ -31,7 +32,7 @@ suspend fun <T>Interactor.withInteractorContext(
     cacheOption: CacheOptions? = null,
     forceRefresh: Boolean = false,
     retryOption: RetryOption = RetryOption(retryCount = 0),
-    block: suspend () -> T,
+    block: suspend CoroutineScope.() -> T,
 ): T {
     val context = InteractorDispatcherProvider.dispatcher
     return withContext(context) {

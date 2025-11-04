@@ -1,5 +1,6 @@
 package com.slack.exercise.ui.usersearch
 
+import com.slack.exercise.commonui.UiStateHolder
 import com.slack.exercise.ui.usersearch.model.UserSearchState
 import kotlinx.coroutines.flow.StateFlow
 

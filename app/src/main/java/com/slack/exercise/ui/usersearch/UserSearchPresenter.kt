@@ -1,14 +1,20 @@
 package com.slack.exercise.ui.usersearch
 
+import androidx.annotation.MainThread
+import com.slack.exercise.commonui.UiText
 import com.slack.exercise.dataprovider.UserSearchResultDataProvider
+import com.slack.exercise.model.UserSearchResult
 import com.slack.exercise.ui.usersearch.model.UserSearchState
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
@@ -23,14 +29,21 @@ class UserSearchPresenterImpl @Inject constructor(
 
     private val searchQuerySharedFlow =
         MutableSharedFlow<String>(replay = 0, extraBufferCapacity = 1)
-    private val scope = CoroutineScope(Dispatchers.Main + Job())
+
     private val stateFlow: MutableStateFlow<UserSearchState> =
         MutableStateFlow(UserSearchState(emptySet()))
 
-    override fun getUserSearchState(): StateFlow<UserSearchState> = stateFlow
+    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, exception ->
+        setError(exception.localizedMessage ?: "An unexpected error occurred")
+        //Centralize exception handling/logging here if needed (For splunk or crashlytics)
+    }
+    private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob() + coroutineExceptionHandler)
+
+    override fun getUserSearchState(): StateFlow<UserSearchState> = stateFlow.asStateFlow()
 
     init {
         scope.launch {
+            setLoading()
             searchQuerySharedFlow.map {
                 if (it.isEmpty()) {
                     emptySet()
@@ -38,7 +51,7 @@ class UserSearchPresenterImpl @Inject constructor(
                     userNameResultDataProvider.fetchUsers(it)
                 }
             }.collect {
-                stateFlow.tryEmit(UserSearchState(it))
+                setContent(it)
             }
         }
     }
@@ -49,5 +62,23 @@ class UserSearchPresenterImpl @Inject constructor(
 
     override fun onQueryTextChange(searchTerm: String) {
         searchQuerySharedFlow.tryEmit(searchTerm)
+    }
+
+    @MainThread
+    private fun setContent(userList: Set<UserSearchResult>){
+        stateFlow.tryEmit(UserSearchState(userList = userList))
+    }
+
+    @MainThread
+    private fun setError(msg: String){
+        stateFlow.tryEmit(stateFlow.value.copy(
+            isLoadingUi = false,
+            error = UiText.DynamicString(msg) //TODO add resource support
+        ))
+    }
+
+    @MainThread
+    private fun setLoading(){
+        stateFlow.tryEmit(stateFlow.value.copy(isLoadingUi = true))
     }
 }

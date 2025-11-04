@@ -33,3 +33,5 @@ google-services.json
 *.hprof
 common/src/main/java/com/slack/exercise/.DS_Store
 common/src/main/java/com/slack/exercise/common/.DS_Store
+common-ui/src/main/java/com/slack/exercise/commonui/.DS_Store
+common-ui/src/main/java/com/slack/exercise/.DS_Store
