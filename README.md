@@ -18,7 +18,14 @@ A modular Android app for searching Slack users with caching and deny list filte
 
 ### DenyListDataProviderImpl
 
-Manages blocked search terms. Loads initial terms from a raw resource file, validates searches against the list, and adds new terms when searches return no results. Everything is cached in memory and persisted to the database.
+Manages blocked search terms with a smart data flow:
+
+1. **Initial Load**: On first run, loads deny list from `R.raw.denylist` and stores it in the local database
+2. **Subsequent Loads**: Reads deny list from the database (faster than reading raw files)
+3. **Runtime Updates**: When searches return no results, new terms are added to the database
+4. **In-Memory Cache**: Everything is cached in memory for quick lookups during searches
+
+This approach gives you the best of both worlds - seed data from resources and persistent updates in the database.
 
 ### withInteractorContext
 
