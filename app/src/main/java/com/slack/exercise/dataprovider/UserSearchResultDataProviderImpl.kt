@@ -23,7 +23,7 @@ class UserSearchResultDataProviderImpl @Inject constructor(
      */
     override suspend fun fetchUsers(searchTerm: String, forceRefresh: Boolean): Set<UserSearchResult>
     = withInteractorContext(cacheOption = CacheOptions(key =  SearchCacheKey(searchTerm = searchTerm)),
-        retryOption = RetryOption(1)) {
+        retryOption = RetryOption(2)) {
         slackApi.searchUsers(searchTerm)
             .map { user ->
                 UserSearchResult(username = user.username, avatarUrl = user.avatarUrl, id = user.id, displayName = user.displayName)
