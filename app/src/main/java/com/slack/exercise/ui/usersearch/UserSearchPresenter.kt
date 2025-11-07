@@ -48,7 +48,7 @@ class UserSearchPresenterImpl @Inject constructor(
         scope.launch {
             setLoading()
             async { denyListDataProvider.setDenyList() }
-            searchQuerySharedFlow.distinctUntilChanged().debounce(100).map { searchTerm ->
+            searchQuerySharedFlow.distinctUntilChanged().debounce(300).map { searchTerm ->
                 if (searchTerm.isEmpty()) {
                     Triple(emptySet<UserSearchResult>(), searchTerm, true)
                 } else {
