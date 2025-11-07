@@ -58,7 +58,7 @@ class UserSearchPresenterImpl @Inject constructor(
                 }
             }.collectLatest { (userList, searchTerm, validSearchTerm) ->
                 setContent(userList)
-                if(userList.isEmpty() && searchTerm.isNotEmpty())
+                if(userList.isEmpty() && searchTerm.isNotEmpty() && validSearchTerm)
                     async { denyListDataProvider.addSearchTermToDenylist(searchTerm) }
             }
         }
