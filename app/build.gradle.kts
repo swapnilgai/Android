@@ -66,7 +66,8 @@ dependencies {
     implementation(libs.coroutines.android)
     implementation(libs.lifecycle.runtime)
     implementation(libs.lifecycle.viewmodel)
-//    implementation(libs.lifecycle.compose)
+    implementation(libs.lifecycle.compose)
+    implementation(libs.coil.compose)
 
     implementation(libs.dagger)
     kapt(libs.dagger.compiler)

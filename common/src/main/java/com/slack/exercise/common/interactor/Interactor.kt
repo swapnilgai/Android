@@ -63,6 +63,7 @@ suspend fun <T>Interactor.withInteractorContext(
                             cache.set(
                                 key = key,
                                 value = blockResult,
+                                expirationPolicy = cacheOption.expirationPolicy
                             )
                         }
                     }
@@ -80,6 +81,6 @@ suspend fun <T>Interactor.withInteractorContext(
     }
 }
 
-suspend fun Interactor.invalidateCache(cacheKey: CacheKey) = withContext(InteractorDispatcherProvider.dispatcher) {
+suspend fun Interactor.invalidateCache(cacheKey: CacheKey) {
     cache.remove(cacheKey)
 }

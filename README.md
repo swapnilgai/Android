@@ -1,26 +1,54 @@
-# android-code-exercise
-Skeleton project for the coding exercise for Android candidates
+# Slack User Search
 
-## Skeleton Code Overview
+A modular Android app for searching Slack users with caching and deny list filtering.
 
-We're starting you off with a simple app skeleton you can build on. Feel free to make any changes
-you want. Just because we're doing something in the skeleton doesn't mean you should too -- we want
-to see your preferences and skills for Android development.
+## Project Structure
 
-### Libraries / Dependencies
-All dependencies are managed with a Gradle version catalog in `gradle/libs.versions.toml`. If you
-have a third-party library you want to use, feel free to add it. Remember to write about it in your
-Readme so we know what it does and why you picked it.
+**common** - Core utilities and shared business logic
 
-### Views or Compose
-We provide two different Fragment skeletons you can pick from: `UserSearchFragment` uses XML views,
-and `UserSearchComposeFragment` uses Compose. There is no requirement to use one or the other: use
-whatever you are comfortable with or think will showcase your skills best in the time you have.
+**common-ui** - Reusable UI components for Compose
 
-You can pick which fragment to use by changing the `android:name` param in the Activity's layout 
-(`activity_user_search.xml`).
+**cache** - In-memory LRU cache with expiration support
 
-### Dependency Injection
-We know setting up dependency injection can be time consuming, so we provide a basic Dagger setup
-for you to use. This uses dagger.android components, with the `@ContributesAndroidInjector` bindings
-in `ui/dagger/BindingModule.kt`
+**interactor** - Business logic layer that handles threading, caching, and retries automatically
+
+**common-db** - Local database using Room for persisting deny list
+
+## Key Components
+
+### DenyListDataProviderImpl
+
+Manages blocked search terms. Loads initial terms from a raw resource file, validates searches against the list, and adds new terms when searches return no results. Everything is cached in memory and persisted to the database.
+
+### withInteractorContext
+
+Extension function that handles the boring stuff - threading, caching, and retries.
+
+**What it does:**
+- Runs your code on a background thread
+- Caches results automatically
+- Retries failed operations
+
+Example:
+```kotlin
+withInteractorContext(
+    cacheOption = CacheOptions(key = "users_$query"),
+    retryOption = RetryOption(retryCount = 3)
+) {
+    fetchUsersFromApi(query)
+}
+```
+
+## Why This Setup?
+
+Modular design keeps things organized. Each module does one thing well. Easy to test, easy to reuse, and performs well with built-in caching.
+
+## Tech Stack
+
+Kotlin, Jetpack Compose, Coroutines, Dagger, Room, Coil, Retrofit
+
+## UI Implementation
+
+The entire UI is built with Jetpack Compose. No XML layouts were added - everything is pure Compose code.
+
+

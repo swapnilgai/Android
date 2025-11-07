@@ -2,6 +2,9 @@ package com.slack.exercise.dataprovider
 
 import android.content.Context
 import com.slack.exercise.R
+import com.slack.exercise.common.cache.CacheKey
+import com.slack.exercise.common.cache.CacheOptions
+import com.slack.exercise.common.interactor.invalidateCache
 import com.slack.exercise.common.interactor.withInteractorContext
 import com.slack.exercise.commondb.dao.DenylistDao
 import com.slack.exercise.commondb.entity.Denylist
@@ -13,6 +16,8 @@ import javax.inject.Singleton
 /**
  * Implementation of [DenyListDataProvider] that loads denied search terms from raw resources.
  */
+
+private data object DenyListCacheKey: CacheKey
 @Singleton
 class DenyListDataProviderImpl @Inject constructor(
     private val context: Context,
@@ -28,7 +33,7 @@ class DenyListDataProviderImpl @Inject constructor(
     }
 
     override suspend fun getDenyList(): Set<String> {
-        return withInteractorContext() {
+        return withInteractorContext(cacheOption = CacheOptions(key =  DenyListCacheKey)) {
 
             val dynamicTerms = denylistDao.getAllTermsAsStrings().toSet()
 
@@ -36,8 +41,18 @@ class DenyListDataProviderImpl @Inject constructor(
         }
     }
 
+    override suspend fun addSearchTermToDenylist(searchTerm: String) {
+        if (searchTerm.isBlank()) return
+
+        withInteractorContext {
+            val normalizedTerm = searchTerm.trim().lowercase()
+            denylistDao.insertTerm(Denylist(term = normalizedTerm))
+            invalidateCache(DenyListCacheKey)
+        }
+    }
+
     override suspend fun setDenyList(){
-        return withInteractorContext() {
+        return withInteractorContext {
 
             val result = loadDenyListFromRaw().map { it -> Denylist(term = it) }
 
@@ -61,16 +76,6 @@ class DenyListDataProviderImpl @Inject constructor(
 
                 return denySet.toSet()
             }
-        }
-    }
-
-    override suspend fun addSearchTermToDenylist(searchTerm: String) {
-        if (searchTerm.isBlank()) return
-
-        val normalizedTerm = searchTerm.trim().lowercase()
-
-        withInteractorContext {
-            denylistDao.insertTerm(Denylist(term = normalizedTerm))
         }
     }
 }

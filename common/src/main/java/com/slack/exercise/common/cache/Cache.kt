@@ -14,7 +14,7 @@ class Cache internal constructor(maxSize: Int){
     private val lruCache: LruCache<CacheKey, CacheEntry> = LruCache(maxSize)
 
     @Synchronized
-    fun set(key: CacheKey, value: Any?) {
+    fun set(key: CacheKey, value: Any?, expirationPolicy: CacheExpirationPolicy = defaultCacheExpiration) {
 
         if(value == null) {
             lruCache.remove(key)
@@ -24,7 +24,7 @@ class Cache internal constructor(maxSize: Int){
         lruCache.put(key, CacheEntry(
                 data = value,
                 requestTimeStamp = System.currentTimeMillis(),
-                expirationPolicy = defaultCacheExpiration
+                expirationPolicy = expirationPolicy
             )
         )
     }

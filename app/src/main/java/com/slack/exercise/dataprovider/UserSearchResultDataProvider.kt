@@ -1,7 +1,7 @@
 package com.slack.exercise.dataprovider
 
 import com.slack.exercise.common.interactor.Interactor
-import com.slack.exercise.model.UserSearchResult
+import com.slack.exercise.commonui.component.UserSearchResult
 
 /**
  * Provider of [UserSearchResult].

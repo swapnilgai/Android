@@ -6,7 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Search
@@ -27,11 +28,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.slack.exercise.R
-import com.slack.exercise.model.UserSearchResult
+import com.slack.exercise.commonui.component.SearchResultItem
+import com.slack.exercise.commonui.component.UserSearchResult
 import com.slack.exercise.ui.usersearch.model.UserSearchState
 import dagger.android.support.DaggerFragment
 import javax.inject.Inject
@@ -54,9 +56,11 @@ class UserSearchComposeFragment : DaggerFragment() {
       setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
       setContent {
         MaterialTheme {
-          val state by presenter.getUserSearchState().collectAsState(UserSearchState(emptySet()))
+          val onQueryTextChange = remember { presenter::onQueryTextChange } //to avoid recomposition issues
 
-          UserSearchScreen(state) { presenter.onQueryTextChange(it) }
+          val state by presenter.getUserSearchState().collectAsStateWithLifecycle(UserSearchState(emptySet()))
+
+          UserSearchScreen(state, onQueryTextChange = onQueryTextChange)
         }
       }
     }
@@ -65,7 +69,7 @@ class UserSearchComposeFragment : DaggerFragment() {
 
 /**
  * The User Search Screen layout.
- *
+ *0000
  * @param state Ui state for the User Search Screen.
  * @param modifier the modifier to apply to this layout.
  * @param onQueryTextChange the callback to be invoked when the search query changes.
@@ -81,13 +85,12 @@ private fun UserSearchScreen(
         onQueryChange = onQueryTextChange,
         modifier = Modifier.align(Alignment.CenterHorizontally),
     )
-    Column {
-      state.userList.forEach { result ->
-        Text(
-            result.username,
-            modifier = Modifier.padding(dimensionResource(R.dimen.item_margin)),
-            style = MaterialTheme.typography.titleMedium,
-        )
+    LazyColumn {
+      items(
+        items = state.userList.toList(),
+        key = { result -> result.id }
+      ) { result ->
+        SearchResultItem(userSearchResult = result)
       }
     }
   }
@@ -134,6 +137,7 @@ private fun UserSearchBar(onQueryChange: (String) -> Unit, modifier: Modifier = 
       }
 }
 
+
 @Composable
 @Preview
 private fun Preview() {
@@ -141,7 +145,8 @@ private fun Preview() {
     Surface {
       UserSearchScreen(
           state = UserSearchState(
-              setOf(UserSearchResult("James", avatarUrl = "", displayName = "James", id= "1"),
+              setOf(
+                  UserSearchResult("James", avatarUrl = "", displayName = "James", id = "1"),
                   UserSearchResult("James123", avatarUrl = "", displayName = "James", id= "2"))
           )
       )

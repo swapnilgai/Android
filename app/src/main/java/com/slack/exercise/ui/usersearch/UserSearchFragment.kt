@@ -12,8 +12,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.slack.exercise.R
+import com.slack.exercise.commonui.component.UserSearchResult
 import com.slack.exercise.databinding.FragmentUserSearchBinding
-import com.slack.exercise.model.UserSearchResult
 import dagger.android.support.DaggerFragment
 import kotlinx.coroutines.launch
 import timber.log.Timber

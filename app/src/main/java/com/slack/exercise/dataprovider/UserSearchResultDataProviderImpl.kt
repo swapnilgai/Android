@@ -5,7 +5,7 @@ import com.slack.exercise.common.cache.CacheKey
 import com.slack.exercise.common.cache.CacheOptions
 import com.slack.exercise.common.interactor.RetryOption
 import com.slack.exercise.common.interactor.withInteractorContext
-import com.slack.exercise.model.UserSearchResult
+import com.slack.exercise.commonui.component.UserSearchResult
 import javax.inject.Inject
 import javax.inject.Singleton
 

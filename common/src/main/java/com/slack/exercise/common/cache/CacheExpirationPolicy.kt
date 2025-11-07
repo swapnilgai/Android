@@ -15,10 +15,6 @@ data class ExpireAfterTimeout(
 }
 
 private const val DEFAULT_CACHE_EXPIRATION_DURATION = 1000L * 60 * 15 // 15 minutes
-
-private const val CACHE_DURATION_24H = 24 * 60 * 60 * 1000L // 24 hours
-
 val defaultCacheExpiration = ExpireAfterTimeout(DEFAULT_CACHE_EXPIRATION_DURATION)
-val twentyFourHourCacheExpirationPolicy = ExpireAfterTimeout(CACHE_DURATION_24H)
 
 

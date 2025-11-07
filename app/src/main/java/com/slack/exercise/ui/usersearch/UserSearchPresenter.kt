@@ -1,15 +1,13 @@
 package com.slack.exercise.ui.usersearch
 
 import androidx.annotation.MainThread
-import com.slack.exercise.commonui.UiText
+import com.slack.exercise.commonui.component.UserSearchResult
 import com.slack.exercise.dataprovider.DenyListDataProvider
 import com.slack.exercise.dataprovider.UserSearchResultDataProvider
-import com.slack.exercise.model.UserSearchResult
 import com.slack.exercise.ui.usersearch.model.UserSearchState
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
@@ -21,7 +19,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -53,13 +50,13 @@ class UserSearchPresenterImpl @Inject constructor(
             async { denyListDataProvider.setDenyList() }
             searchQuerySharedFlow.distinctUntilChanged().debounce(100).map { searchTerm ->
                 if (searchTerm.isEmpty()) {
-                    emptySet<UserSearchResult>() to ""
+                    Triple(emptySet<UserSearchResult>(), searchTerm, true)
                 } else {
-                    val result = denyListDataProvider.isValidSearchQuery(searchTerm)
-                    val users = if(result) userNameResultDataProvider.fetchUsers(searchTerm) else emptySet<UserSearchResult>()
-                    users to searchTerm
+                    val validSearchTerm = denyListDataProvider.isValidSearchQuery(searchTerm)
+                    val users = if(validSearchTerm) userNameResultDataProvider.fetchUsers(searchTerm) else emptySet<UserSearchResult>()
+                    Triple(users, searchTerm, validSearchTerm)
                 }
-            }.collectLatest { (userList, searchTerm) ->
+            }.collectLatest { (userList, searchTerm, validSearchTerm) ->
                 setContent(userList)
                 if(userList.isEmpty() && searchTerm.isNotEmpty())
                     async { denyListDataProvider.addSearchTermToDenylist(searchTerm) }
@@ -84,7 +81,7 @@ class UserSearchPresenterImpl @Inject constructor(
     private fun setError(msg: String){
         stateFlow.tryEmit(stateFlow.value.copy(
             isLoadingUi = false,
-            error = UiText.DynamicString(msg) //TODO add resource support
+            error = msg
         ))
     }
 
